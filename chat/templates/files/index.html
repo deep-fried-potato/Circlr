@@ -1,6 +1,6 @@
 {% block content %}
     {{upload_status}}<br>
-    
+
     <form class="" action="{% url 'fileindex' %}" method="post" enctype="multipart/form-data" >
       {%csrf_token%}
       <input type="file" name="uploadedfile"><br>
@@ -18,7 +18,7 @@
 
     var copyText = document.getElementById("copier");
     copyText.style.display="";
-    copyText.value=window.location.host+"/files/"+file_id
+    copyText.value="http://"+window.location.host+"/files/"+file_id
     copyText.select();
     document.execCommand("copy");
     copyText.style.display="none";

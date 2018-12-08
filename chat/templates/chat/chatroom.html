@@ -12,6 +12,23 @@
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+	<script>
+    function checkLinks(message){
+        var pattern1 = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+        var pattern2 = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+        if (pattern1.test(message) || pattern2.test(message)) {
+          if (!/^(f|ht)tps?:\/\//i.test(message)) {
+            return '<a style="color:red;" href="' + "http://" + message +'">'+message+'</a>';
+          }
+          else{
+              return '<a style="color:red;" href="'+message+'">'+message+'</a>';
+          }
+        }
+
+          return message;
+
+    };
+  </script>
   <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -32,7 +49,7 @@
 			<button class="navbar-toggler" data-toggle="collapse" data-target="#collapse-target">
 				<span class="navbar-toggler-icon"></span>
 			</button>
-			<div class="collapse navbar-collapse" id="collapse-target" style="font-size: 20px">	
+			<div class="collapse navbar-collapse" id="collapse-target" style="font-size: 20px">
 				<ul class="navbar-nav ml-auto" style="padding: 0px 10px">
 					{% if user.is_authenticated %}
 						<li class="nav-item">
@@ -70,214 +87,228 @@
 			<br>
 		</div>
 	</div>
-<div class="container">
-<h3 class=" text-center">Messaging</h3>
-<div class="messaging">
-      <div class="inbox_msg">
-        <div class="inbox_people">
-          <div class="headind_srch">
-            <div class="recent_heading">
-              <h4>Recent</h4>
-            </div>
-            <!--
-            <div class="srch_bar">
-              <div class="stylish-input-group">
-                <input type="text" class="search-bar"  placeholder="Search" >
-                <span class="input-group-addon">
-                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
-                </span> </div>
-            </div>-->
-          </div>
+	<div class="container">
+	<h3 class=" text-center">Messaging</h3>
+	<div class="messaging">
+	      <div class="inbox_msg">
+	        <div class="inbox_people">
+	          <div class="headind_srch">
+	            <div class="recent_heading">
+	              <h4>Recent</h4>
+	            </div>
+	            <!--
+	            <div class="srch_bar">
+	              <div class="stylish-input-group">
+	                <input type="text" class="search-bar"  placeholder="Search" >
+	                <span class="input-group-addon">
+	                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+	                </span> </div>
+	            </div>-->
+	          </div>
 
-        <div id="dummydiv" >
-          <div class="inbox_chat">
-            {%for item in recentlist%}
-              <div class="chat_list" style="cursor:pointer;" onclick="roomNameGen('{{request.user.username}}','{{item.0}}')" >
-                <div class="chat_people">
-                  <div class="chat_img"> <img src="{{ item.0.userprofile.picture.url }}"  > </div>
-                  <div class="chat_ib">
-                    <h5>{{item.0.username}}<span class="chat_date">{{item.3}}</span></h5>
-                    <p>{{item.1}} : {{item.2}}</p>
-                  </div>
-                </div>
-              </div>
-            {%endfor%}
-              <div class="headind_srch" >
-                <div class="recent_heading">
-                  <h4>All Users</h4>
-                </div>
-              </div>
-            {%for user in userlist%}
-              {%if user.username != request.user.username %}
-                <div class="chat_list" style="cursor:pointer;" onclick="roomNameGen('{{request.user.username}}','{{user.username}}')" >
-                  <div class="chat_people">
-                    <div class="chat_img"> <img src="{{ user.userprofile.picture.url }}"  > </div>
-                    <div class="chat_ib">
-                      <h5>{{user.username}}<span class="chat_date"></span></h5>
-                      <p>Click to chat!</p>
-                    </div>
-                  </div>
-                </div>
-              {%endif%}
-            {%endfor%}
-          </div>
-        </div>
+	        <div class="dummydiv" >
+	          <div class="inbox_chat">
+	            {%for item in recentlist%}
+	              <div class="chat_list" style="cursor:pointer;" onclick="roomNameGen('{{request.user.username}}','{{item.0}}')" >
+	                <div class="chat_people">
+	                  <div class="chat_img"> <img src="{{ item.0.userprofile.picture.url }}"  > </div>
+	                  <div class="chat_ib">
+	                    <h5>{{item.0.username}}<span class="chat_date">{{item.3}}</span></h5>
+	                    <p>{{item.1}} : {{item.2}}</p>
+	                  </div>
+	                </div>
+	              </div>
+	            {%endfor%}
+	              <div class="headind_srch" >
+	                <div class="recent_heading">
+	                  <h4>All Users</h4>
+	                </div>
+	              </div>
+	            {%for user in userlist%}
+	              {%if user.username != request.user.username %}
+	              <script>sender_img ="{{ user.userprofile.picture.url }}" </script>
+	                <div class="chat_list" style="cursor:pointer;" onclick="roomNameGen('{{request.user.username}}','{{user.username}}')" >
+	                  <div class="chat_people">
+	                    <div class="chat_img"> <img src="{{ user.userprofile.picture.url }}"  > </div>
+	                    <div class="chat_ib">
+	                      <h5>{{user.username}}<span class="chat_date"></span></h5>
+	                      <p>Click to chat!</p>
+	                    </div>
+	                  </div>
+	                </div>
+	              {%endif%}
+	            {%endfor%}
+	          </div>
+	        </div>
 
-        </div>
-        <div class="mesgs">
-          <div id="chat-log" class="msg_history">
-            {%for logitem in message_log%}
-              {%if request.user.username == logitem.sender %}
-                <div class="outgoing_msg">
-                  <div class="sent_msg">
-                    <p>
-                      {{logitem.message}}
-                    </p>
-                    <span class="time_date">{{logitem.timestamp}}</span> </div>
-                </div>
-              {%else%}
-              <div class="incoming_msg">
-                <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png"  > </div>
-                <div class="received_msg">
-                  <div class="received_withd_msg">
-                    <p>
-                      {{logitem.message}}
-                    </p>
-                    <span class="time_date">{{logitem.timestamp}}</span></div>
-                </div>
-              </div>
-              {%endif%}
-            {%endfor%}
-
-
-          </div>
-          <div class="type_msg">
-            <div class="input_msg_write">
-              <input id="chat-message-input" type="text" class="write_msg" placeholder="Type a message" />
-              <button id ="filesharer" class="file_send_btn" type="button" name="filesharer"><i class="fa fa-paperclip fa-lg"  aria-hidden="true"></i></button>
-              <button id="chat-message-submit" class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
+	        </div>
+	        <div class="mesgs">
+	          <div id="chat-log" class="msg_history">
+	            {%for logitem in message_log%}
+	              {%if request.user.username == logitem.sender.username %}
+	                <div class="outgoing_msg">
+	                  <div class="sent_msg">
+	                    <p>
+	                      <script>document.write(checkLinks("{{logitem.message}}"))</script>
+	                    </p>
+	                    <span class="time_date">{{logitem.timestamp}}</span> </div>
+	                </div>
+	              {%else%}
+	              <div class="incoming_msg">
+	                <div class="incoming_msg_img"> <img src="{{ logitem.sender.userprofile.picture.url }}"  > </div>
+	                <div class="received_msg">
+	                  <div class="received_withd_msg">
+	                    <p>
+	                      {{logitem.message}}
+	                    </p>
+	                    <span class="time_date">{{logitem.timestamp}}</span></div>
+	                </div>
+	              </div>
+	              {%endif%}
+	            {%endfor%}
 
 
+	          </div>
+	          <div class="type_msg">
+	            <div class="input_msg_write">
+	              <input id="chat-message-input" type="text" class="write_msg" placeholder="Type a message" />
+	              <button id ="filesharer" class="file_send_btn" type="button" name="filesharer"><i class="fa fa-paperclip fa-lg"  aria-hidden="true"></i></button>
+	              <button id="chat-message-submit" class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
 
 
-    </div></div>
-
-    <div id="frame_div" style="display:none;" ><button type="button" name="close" onclick="closeframe();" >Close</button><br><iframe id="files_frame" name="files_frame"  ></iframe></div>
-    <script>
-
-      function roomNameGen(userid,friendid){
-        var roomName = [userid,friendid].sort().join("");
-        document.cookie="userid="+userid;
-
-        window.location.pathname = '/chat/' + roomName + '/';
-
-      };
 
 
-    </script>
-    </body>
-    <script>
-        //Init settings
-        var roomName = {{ room_name_json }};
+	    </div></div>
 
-        function getCookie(name) {
-                  var value = "; " + document.cookie;
-                  var parts = value.split("; " + name + "=");
-                  if (parts.length == 2) return parts.pop().split(";").shift();
-                };
+	    <div id="frame_div" style="display:none;" ><button type="button" name="close" onclick="closeframe();" >Close</button><br><iframe id="files_frame" name="files_frame"  ></iframe></div>
+	    <script>
 
-        var userid = getCookie("userid");
+	      function roomNameGen(userid,friendid){
+	        var roomName = [userid,friendid].sort().join("");
+	        document.cookie="userid="+userid;
 
-        checkTextareaHeight();
-        //String manipulation Functions
-        function updateDiv()
-        {
-			console.log("reloaded");          
-			$( "#dummydiv" ).load(window.location.href + " .inbox_chat" );
-        }
-        function checkLinks(message){
-            var pattern1 = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
-            var pattern2 = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-            if (pattern1.test(message) || pattern2.test(message)) {
-              return '<a href="'+message+'">'+message+'</a>';
-            }
-              return message;
+	        window.location.pathname = '/chat/' + roomName + '/';
 
-        };
-
-        //Date Time Settings
-        var options = {  year: 'numeric', month: 'short', day: 'numeric',hour: 'numeric',minute:'numeric' };
-        var today  = new Date();
-
-        //Websockets
-        var chatSocket = new WebSocket(
-            'ws://' + window.location.host +
-            '/ws/chat/' + roomName + '/');
-
-        chatSocket.onmessage = function(e) {
-            var data = JSON.parse(e.data);
-            var message = data['message'];
-            var sender = data['sender'];
-            incoming_template = '<div class="incoming_msg">\n<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png"  > </div>\n<div class="received_msg">\n<div class="received_withd_msg">\n<p>'+message+'</p>\n<span class="time_date">'+today.toLocaleDateString("en-US", options)+'</span></div>\n</div>\n</div>'
-
-            outgoing_template = '<div class="outgoing_msg"><div class="sent_msg"><p>'+message+'</p><span class="time_date">'+today.toLocaleDateString("en-US", options)+'</span> </div></div>'
-            if (sender == "{{request.user.username}}" ){
-                document.querySelector('#chat-log').innerHTML += outgoing_template;
-            }
-            else{
-              document.querySelector('#chat-log').innerHTML += incoming_template;
-            }
-            updateDiv();
-            checkTextareaHeight();
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-        //SEND FUNCTION IS HERE!!
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            var messageInputDom = document.querySelector('#chat-message-input');
-            var message =   messageInputDom.value;
-            if (message !=""){
-              chatSocket.send(JSON.stringify({
-                  'sender' : "{{request.user.username}}",
-                  'message': message,
-                  'roomname' : roomName
-              }));
-            }
+	      };
 
 
-            messageInputDom.value = '';
-        };
+	    </script>
+	    </body>
+	    <script>
+	        //Init settings
 
-        document.querySelector('#filesharer').onclick = function(e){
-                $("#frame_div").css("display","block");
-                //window.document.getElementById("frame_div").open("/files", "files_frame");
-                document.getElementById("files_frame").src="/files";
-        };
-        function closeframe(){
-          $("#frame_div").css("display","none");
-        };
+	        var roomName = {{ room_name_json }};
+
+	        function getCookie(name) {
+	                  var value = "; " + document.cookie;
+	                  var parts = value.split("; " + name + "=");
+	                  if (parts.length == 2) return parts.pop().split(";").shift();
+	                };
+
+	        var userid = getCookie("userid");
+
+	        checkTextareaHeight();
+	        //String manipulation Functions
+	        /*var updateDivvar = setInterval(function(){
+	            updateDiv("notify");
+	        },1000);*/
+	        function updateDiv(mode)
+	        {
+	          if (mode=="notify" ){
+	              var prev = String($(".dummydiv").html())+" ";
+	              $( ".dummydiv" ).load(window.location.href + " .inbox_chat" );
+	              setTimeout(function(){
+	                var cur = String($(".dummydiv").html())+" ";
+	                console.log(prev);
+	                console.log("----------");
+	                console.log(cur)
+	                if(String(prev)!=String(cur)){
+	                  console.log("HAHAH")
+	                  notification();
+	                }
+	              },1000)
+	          }
+	          else{
+	              $( ".dummydiv" ).load(window.location.href + " .inbox_chat" );
+	          }
+	        };
 
 
-        function checkTextareaHeight(){
-           var textarea = document.getElementById("chat-log");
-           if(textarea.selectionStart == textarea.selectionEnd) {
-              textarea.scrollTop = textarea.scrollHeight;
-            }
-        };
+	        //Date Time Settings
+	        var options = {  year: 'numeric', month: 'short', day: 'numeric',hour: 'numeric',minute:'numeric' };
+	        var today  = new Date();
 
-    </script>
+	        //Websockets
+	        var chatSocket = new WebSocket(
+	            'ws://' + window.location.host +
+	            '/ws/chat/' + roomName + '/');
 
-    </html>
+	        chatSocket.onmessage = function(e) {
+	            var data = JSON.parse(e.data);
+	            var message = data['message'];
+	            var sender = data['sender'];
+	            incoming_template = '<div class="incoming_msg">\n<div class="incoming_msg_img"> <img src='+sender_img+'  > </div>\n<div class="received_msg">\n<div class="received_withd_msg">\n<p>'+checkLinks(message)+'</p>\n<span class="time_date">'+today.toLocaleDateString("en-US", options)+'</span></div>\n</div>\n</div>'
+
+	            outgoing_template = '<div class="outgoing_msg"><div class="sent_msg"><p>'+checkLinks(message)+'</p><span class="time_date">'+today.toLocaleDateString("en-US", options)+'</span> </div></div>'
+	            if (sender == "{{request.user.username}}" ){
+	                document.querySelector('#chat-log').innerHTML += outgoing_template;
+	                updateDiv("nonotify");
+	            }
+	            else{
+	              document.querySelector('#chat-log').innerHTML += incoming_template;
+	              updateDiv("nonotify");
+	            }
+
+	            checkTextareaHeight();
+	        };
+
+	        chatSocket.onclose = function(e) {
+	            console.error('Chat socket closed unexpectedly');
+	        };
+
+	        document.querySelector('#chat-message-input').focus();
+	        document.querySelector('#chat-message-input').onkeyup = function(e) {
+	            if (e.keyCode === 13) {  // enter, return
+	                document.querySelector('#chat-message-submit').click();
+	            }
+	        };
+	        //SEND FUNCTION IS HERE!!
+	        document.querySelector('#chat-message-submit').onclick = function(e) {
+	            var messageInputDom = document.querySelector('#chat-message-input');
+	            var message =   messageInputDom.value;
+	            if (message !=""){
+	              chatSocket.send(JSON.stringify({
+	                  'sender' : "{{request.user.username}}",
+	                  'message': message,
+	                  'roomname' : roomName
+	              }));
+	            }
+
+
+	            messageInputDom.value = '';
+	        };
+
+	        document.querySelector('#filesharer').onclick = function(e){
+	                $("#frame_div").css("display","block");
+	                //window.document.getElementById("frame_div").open("/files", "files_frame");
+	                document.getElementById("files_frame").src="/files";
+	        };
+	        function closeframe(){
+	          $("#frame_div").css("display","none");
+	        };
+
+
+	        function checkTextareaHeight(){
+	           var textarea = document.getElementById("chat-log");
+	           if(textarea.selectionStart == textarea.selectionEnd) {
+	              textarea.scrollTop = textarea.scrollHeight;
+	            }
+	        };
+
+	    </script>
+
+	    </html>
