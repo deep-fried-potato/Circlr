@@ -1,0 +1,254 @@
+{% extends 'base.html'%}
+{%block head%}
+  <title>suggestions</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+</script>
+<script type="text/javascript">
+  function Accept(receiver){
+    $("p.accept").fadeOut()
+    $.ajax({
+      type:'POST',
+      url:'/app/acceptr/',
+      dataType:"json",
+      data:{
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+        receiver:receiver,
+            },
+
+      success:function(json){
+        $('.'+receiver).html(json.success);
+        }
+    });
+  }
+
+
+
+  function Decline(receiver,option){
+    $("p.accept").fadeOut()
+    $.ajax({
+      type:'POST',
+      url:'/app/decliner/',
+      dataType:"json",
+      data:{
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+        receiver:receiver,
+        option:option,
+            },
+
+      success:function(json){
+        $('.'+receiver).html(json.success);
+        }
+    });
+  }
+
+
+
+
+
+  function Sendr(req){
+    $("p.accept").fadeOut()
+    $.ajax({
+      type:'POST',
+      url:'/app/sendr/',
+      dataType:"json",
+      data:{
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+        req:req,
+            },
+
+      success:function(json){
+        $('.'+req).html(json.success);
+        }
+    });
+  }
+
+</script>
+{% endblock%}
+{%block body%}
+{% load friendshiptags %}
+<div class="panel-group">
+  <div class="panel panel-primary">
+    <div class="panel-heading"><h1 >MATCH MAKING:</h1></div>
+    <div class="panel-body" style='bgcolor':black>
+      <div class="container">
+        <!-- <h3>{{currusercity}}</h3><br><h3>{{curruserinterest}}</h3> -->
+        <div class="col-md-4">
+          <h4 class="well">Search By Username</h4>
+          <form  method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button type='submit' name='search' class="btn btn-info">
+              <span class="glyphicon glyphicon-search"></span>
+            </button>
+          </form>
+          <hr>
+          <br><br>
+          <ul>
+            {% if userlist %}
+              {% for user in userlist %}
+                {% if user != request.user.username %}
+                  <li class="list-group-item list-group-item-info"><a href=''><h4>{{user}}</h4></a>
+                    {% if user not in filteringbutton %}
+                      <p class="{{user}}">
+                        <button type='submit' name='add friend' class="btn btn-primary" onclick="Sendr('{{user}}')">ADD_FRIEND</button>
+                      </p>
+                    {% endif %}
+                  </li>
+                {%endif%}
+              {% endfor %}
+            {%else%}
+              <h6>no match found</h6>
+            {% endif%}
+            <!--{% for user in userlist %}
+              {% if user.user|stringformat:"s" != curruser %}
+                {{ user.interest|make_list }}
+                {% for aa in list%}
+                  {%if aa == text %}
+                    <li>{{user.user}}</li>
+                  {%endif%}
+                {% endfor %}
+              {% endif %}
+            {% endfor%}
+            -->
+
+          <!-- {% for user in userlist %}
+              {% if user.user|stringformat:"s" != curruser %}
+                {% if user.user|stringformat:"s" == text or user.interest.lower == text or user.interest.upper == text or user.city.lower == text or user.city.upper == text  %}
+
+                  <li>{{user.user}}</li>
+
+                {% endif %}
+              {% endif %}
+            {%endfor%}
+            -->
+          </ul>
+        </div>
+
+        <div class="col-md-4">
+          <h4 class="well">Search By Interest</h4>
+          <form method="POST">
+            {% csrf_token %}
+            {{form1.as_p}}
+            <button type='submit' name='search' class="btn btn-info">
+              <span class="glyphicon glyphicon-search"></span>
+            </button>
+          </form>
+          <hr>
+          <br><br>
+          <ul>
+            {%if interestlist %}
+              {% for user in interestlist %}
+                  <li class="list-group-item list-group-item-info"><a href=''><h4> {{user}}</h4></a>
+                  <!--  {%if user|stringformat:"s" not in friends%} -->
+                  <!-- {%endif%}-->
+                    {% if user.username not in filteringbutton %}
+                      <p class="{{user}}">
+                        <button type='submit' name='add friend' class="btn btn-primary" onclick="Sendr('{{user}}')">ADD_FRIEND</button>
+                      </p>
+                    {%endif%}
+                  </li>
+              {% endfor %}
+            {%else%}
+              <h6>no match found</h6>
+            {%endif%}
+            <!--{% for user in userlist %}
+              {% if user.user|stringformat:"s" != curruser %}
+                {{ user.interest|make_list }}
+                {% for aa in list%}
+                  {%if aa == text %}
+                    <li>{{user.user}}</li>
+                  {%endif%}
+                {% endfor %}
+              {% endif %}
+            {% endfor%}
+            -->
+
+           <!-- {% for user in userlist %}
+              {% if user.user|stringformat:"s" != curruser %}
+                {% if user.user|stringformat:"s" == text or user.interest.lower == text or user.interest.upper == text or user.city.lower == text or user.city.upper == text  %}
+
+                  <li>{{user.user}}</li>
+
+                {% endif %}
+              {% endif %}
+            {%endfor%}
+            -->
+          </ul>
+        </div>
+
+
+        <div class="col-md-4">
+          <h4 class="well">Friend Suggestion:</h4>
+          <hr>
+          <br><br>
+          <ul>
+            {% for user in suggestionlist %}
+              {% if user.username not in filteringbutton %}
+                <li class="list-group-item list-group-item-info"><a href=''><h4>{{user}}</h4></a><br>
+                  <p class="{{user}}">
+                    <button type='submit' name='add friend' class="btn btn-primary" onclick="Sendr('{{user}}')">ADD_FRIEND</button>
+                  </p>
+                </li>
+              {%endif%}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <br>
+    <div class="panel-group">
+      <div class="panel panel-success">
+        <div class="panel-heading"><h1 >FRIENDS:</h1></div>
+          <div class="panel-body">
+            <div>
+              <ul>
+                {% if friends %}
+                {% for frnd in friends %}
+                  <li class="list-group-item list-group-item-success"><a href=''><h4>{{frnd}}</h4></a><br>
+                    <p class="{{frnd}}">
+                      <button type='submit' name='remove' class="btn btn-primary" onclick="Decline('{{frnd}}','1')">Remove</button>
+                    </p>
+                  </li>
+                {% endfor %}
+                {%endif%}
+              </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- displayong pending friend requests part -->
+<div class="col-md-6">
+  <div class="panel-group">
+    <div class="panel panel-warning">
+      <div class="panel-heading"><h1 >FRIENDS REQUESTS:</h1></div>
+        <div class="panel-body">
+          <div>
+            <ul>
+              {%if pendingfrnds %}
+                {% for fr in pendingfrnds %}
+                  <li class="list-group-item list-group-item-warning"><a href=''><h4>{{fr}}</h4></a><br>
+                    <p class="{{fr}}">
+                      <button type='submit' name='accept request' class="btn btn-primary" onclick="Accept('{{fr}}')">Accept</button>
+                      <button type='submit' name='decline request' class="btn btn-primary" onclick="Decline('{{fr}}','0')">Decline</button>
+                    </p>
+                  </li>
+                {% endfor %}
+              {%endif%}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
